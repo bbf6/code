@@ -1,42 +1,33 @@
 import { defineStore } from 'pinia'
+import { api } from 'boot/axios'
+import { buildTree } from 'src/lib/buildTree'
 
 export const useFileStore = defineStore('file', {
   state: () => ({
-    tree: [
-      {
-        label: 'code',
-        icon: 'folder',
-        children: [
-          {
-            label: 'mis_analisis_de_sangre',
-            icon: 'folder',
-            children: [
-              { label: 'test_1.txt' },
-              { label: 'test_2.txt' }
-            ]
-          },
-          {
-            label: 'general',
-            icon: 'folder',
-            children: [
-              { label: 'wifi_password.txt' },
-              { label: 'phone_numbers.txt' }
-            ]
-          },
-          {
-            label: 'formats',
-            icon: 'folder',
-            children: [
-              { label: 'README.md' },
-              { label: '.gitignore' },
-              { label: 'package.json' }
-            ]
-          }
-        ]
-      }
-    ],
-    filename: ''
+    key: null,
+    tree: [],
+    filename: '',
+    fileContent: ''
   }),
-  getters: {},
-  actions: {}
+  getters: {
+    fileExtension(state) {
+      if (!state.filename) return 'txt'
+      return state.filename.split('.').slice(-1)[0]
+    }
+  },
+  actions: {
+    getTree() {
+      api.get('/tree')
+        .then(response => this.tree = buildTree(response.data))
+        .catch(console.error)
+    },
+    getFileContent(id) {
+      api.get(`/file/${id}`)
+        .then(response => {
+          this.filename = response.data.filename
+          this.fileContent = response.data.content
+        })
+        .catch(console.error)
+    }
+  }
 })

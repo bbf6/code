@@ -1,12 +1,13 @@
 <template lang="pug">
 #tree-file.q-gutter-sm.bg-primary
   q-tree.cursor-pointer(
-    :nodes="tree"
+    :nodes="fileStore.tree"
     dense
-    node-key="label"
+    node-key="key"
     no-connectors
     :default-expand-all="true"
-    v-model:selected="fileStore.filename"
+    v-model:selected="fileStore.key"
+    @update:selected="onSelect"
   )
     template(v-slot:default-header="prop")
       .row.items-center
@@ -34,9 +35,16 @@
 import { useFileStore } from 'src/stores/file'
 
 const fileStore = useFileStore()
-const tree = fileStore.tree
 
-const isSelected = prop => prop.node.label === fileStore.filename
+const isSelected = prop => {
+  if (isNaN(prop.node.key)) return false
+  return prop.node.key === fileStore.key
+}
+
+const onSelect = id => {
+  if (!id || isNaN(id)) return
+  fileStore.getFileContent(id)
+}
 </script>
 
 <style lang="sass" scoped>

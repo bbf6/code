@@ -12,12 +12,14 @@ q-page.flex.flex-center
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useFileStore } from 'src/stores/file'
 import TreeFile from 'src/components/TreeFile'
 import CodeEditor from 'src/components/CodeEditor'
 
 const fileStore = useFileStore()
+
+onMounted(fileStore.getTree)
 </script>
 
 <style lang="sass" scoped>

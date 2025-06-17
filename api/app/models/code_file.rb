@@ -1,0 +1,2 @@
+class CodeFile < ApplicationRecord
+end
