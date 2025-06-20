@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { api } from 'boot/axios'
 import { buildTree } from 'src/lib/buildTree'
+import { showErrorAlert, showOkAlert } from 'src/lib/notification'
 
 export const useFileStore = defineStore('file', {
   state: () => ({
@@ -19,7 +20,7 @@ export const useFileStore = defineStore('file', {
     getTree() {
       api.get('/tree')
         .then(response => this.tree = buildTree(response.data))
-        .catch(console.error)
+        .catch(showErrorAlert)
     },
     getFileContent(id) {
       api.get(`/file/${id}`)
@@ -27,7 +28,24 @@ export const useFileStore = defineStore('file', {
           this.filename = response.data.filename
           this.fileContent = response.data.content
         })
-        .catch(console.error)
+        .catch(showErrorAlert)
+    },
+    create(filename) {
+      const params = { filename }
+      api.post('/file', params)
+        .then(() => showOkAlert(`${this.filename} created!`))
+        .catch(showErrorAlert)
+    },
+    update() {
+      const params = { content: this.fileContent }
+      api.put(`/file/${this.key}`, params)
+        .then(() => showOkAlert(`${this.filename} updated!`))
+        .catch(showErrorAlert)
+    },
+    delete(id) {
+      api.delete(`/file/${id}`)
+        .then(() => showOkAlert(`${this.filename} created!`))
+        .catch(showErrorAlert)
     }
   }
 })

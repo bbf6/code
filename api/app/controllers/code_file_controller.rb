@@ -1,6 +1,11 @@
 class CodeFileController < ApplicationController
+  include BuildTree
+
+  before_action :find_file, only: [:update, :delete]
+
   def index
-    render json: tree
+    files = find_files
+    render json: BuildTree.create(files)
   end
 
   def file_content
@@ -8,27 +13,33 @@ class CodeFileController < ApplicationController
     render json: code_file.as_json(only: [:filename, :content])
   end
 
+  def create
+    values = { filename: params[:filename], content: '' }
+    return render json: :created if CodeFile.create(values)
+    render json: :conflict
+  end
+
+  def update
+    return render json: :ok if @file.update(file_params)
+    render json: :conflict
+  end
+
+  def delete
+    return render json: :ok if @file.destroy
+    render json: :conflict
+  end
+
   private
+
+  def find_file
+    @file = CodeFile.find params[:id]
+  end
 
   def find_files
     CodeFile.all
   end
 
-  def file_format(file)
-    "#{file.filename}.#{file.id}"
-  end
-
-  def tree
-    splitted = find_files.map { |f| file_format(f).split('/') }
-    splitted
-      .map { |r| append_to_tree( r[0], r[1..]) }
-      .reduce { |a, b| a.deep_merge(b) }
-  end
-
-  def append_to_tree(hash = {}, head, tail)
-    hash[head] = {} unless hash[head]
-    new_head, *new_tail = tail
-    hash[head] = new_head ? append_to_tree(hash[head], new_head, new_tail) : nil
-    hash
+  def file_params
+    params.require(:code_file).permit(:content)
   end
 end

@@ -28,6 +28,7 @@
     "@codemirror/lang-yaml": "^6.1.2",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@quasar/extras": "^1.16.4",
+    "@rails/actioncable": "^8.0.200",
     "axios": "^1.2.1",
     "codemirror": "^6.0.1",
     "core-js": "^3.31.1",

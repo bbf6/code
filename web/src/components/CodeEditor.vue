@@ -3,6 +3,7 @@ codemirror.editor(
   v-model="fileStore.fileContent"
   style="width: calc(100vw - 290px); height: calc(100vh - 50px)"
   :autofocus="true"
+  readOnly="nocursor"
   :indent-with-tab="true"
   :extensions="extensions"
   @ready="handleReady"
@@ -48,6 +49,7 @@ const langs = {
 }
 
 const getLang = () => langs[fileStore.fileExtension]
+
 const extensions = computed(() => {
   const lang = getLang()
   if (!lang) return [oneDark]
