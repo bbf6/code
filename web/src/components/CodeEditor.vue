@@ -1,13 +1,12 @@
 <template lang="pug">
 codemirror.editor(
+  @keydown="onWrite"
   v-model="fileStore.fileContent"
   style="width: calc(100vw - 290px); height: calc(100vh - 50px)"
   :autofocus="true"
-  readOnly="nocursor"
   :indent-with-tab="true"
   :extensions="extensions"
-  @ready="handleReady"
-  @change="log('change', $event)"
+  @change="onInput"
 )
 </template>
 
@@ -57,12 +56,6 @@ const extensions = computed(() => {
 })
 const view = shallowRef()
 
-const handleReady = (payload) => {
-  view.value = payload.view
-}
-
-const log = console.log
-
 const getCodemirrorStates = () => {
   const state = view.value.state
   const ranges = state.selection.ranges
@@ -70,5 +63,50 @@ const getCodemirrorStates = () => {
   const cursor = ranges[0].anchor
   const length = state.doc.length
   const lines = state.doc.lines
+}
+
+let typingStartTime = 0;
+let lastInputTime = 0;
+let inactivityTimer = null;
+let typingCheckTimer = null;
+const typingDelay = 2000
+const inactiveDelay = 3000
+
+const onInput = () => {
+  fileStore.isInactive = false;
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    fileStore.isInactive = true;
+    fileStore.isTyping = false;
+    fileStore.readOnly = false
+    typingStartTime = 0;
+    fileStore.update()
+  }, inactiveDelay);
+  if (!typingStartTime) checkTyping()
+  checkInactive()
+};
+
+const checkTyping = () => {
+  const now = Date.now();
+  typingStartTime = now;
+  typingCheckTimer = setTimeout(() => {
+    if (Date.now() - typingStartTime >= typingDelay)
+      fileStore.isTyping = true;
+  }, typingDelay);
+}
+
+const checkInactive = () => {
+  if (Date.now() - typingStartTime > typingDelay) return
+  clearTimeout(typingCheckTimer);
+  typingCheckTimer = setTimeout(() => {
+    if (Date.now() - typingStartTime >= typingDelay)
+      fileStore.isTyping = true;
+  }, typingDelay - (Date.now() - typingStartTime));
+}
+
+const onWrite = (event) => {
+  if (!fileStore.readOnly && fileStore.key) return
+  event.preventDefault();
+  event.stopPropagation();
 }
 </script>

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     get 'file/:id' => 'code_file#file_content'
     post 'file' => 'code_file#create'
     put 'file/:id' => 'code_file#update'
+    put 'file/rename/:id' => 'code_file#rename'
     delete 'file/:id' => 'code_file#delete'
   end
 end

@@ -1,7 +1,7 @@
 class CodeFileController < ApplicationController
   include BuildTree
 
-  before_action :find_file, only: [:update, :delete]
+  before_action :find_file, only: [:update, :rename, :delete]
 
   def index
     files = find_files
@@ -14,13 +14,22 @@ class CodeFileController < ApplicationController
   end
 
   def create
-    values = { filename: params[:filename], content: '' }
+    filename = params[:filename].gsub(' ', '_')
+    values = { filename: filename, content: '' }
     return render json: :created if CodeFile.create(values)
     render json: :conflict
   end
 
   def update
     return render json: :ok if @file.update(file_params)
+    render json: :conflict
+  end
+
+  def rename
+    parts = @file.filename.split '/'
+    name = rename_params[:filename].gsub(' ', '_').gsub('/', '')
+    new_name = (parts[0..-2] + [name]).join '/'
+    return render json: :ok if @file.update(filename: new_name)
     render json: :conflict
   end
 
@@ -41,5 +50,9 @@ class CodeFileController < ApplicationController
 
   def file_params
     params.require(:code_file).permit(:content)
+  end
+
+  def rename_params
+    params.require(:code_file).permit(:filename)
   end
 end

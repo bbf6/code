@@ -4,7 +4,7 @@ const showOkAlert = message =>
   Notify.create({
     icon: 'check',
     position: 'bottom',
-    color: 'positive',
+    color: 'primary',
     message
   })
 

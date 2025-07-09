@@ -12,7 +12,8 @@ export default defineConfig((ctx) => {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
     boot: [
-      'axios'
+      'axios',
+      'cable'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-file#css
