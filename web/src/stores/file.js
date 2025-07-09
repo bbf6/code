@@ -88,12 +88,6 @@ export const useFileStore = defineStore('file', {
         }
       })
     },
-    cleanup() {
-      if (this.subscription) {
-        this.subscription.unsubscribe()
-        this.subscription = null
-      }
-    },
     send(data) {
       if (!this.subscription) return
       this.subscription.perform(data.action, { ...data, user: this.user })

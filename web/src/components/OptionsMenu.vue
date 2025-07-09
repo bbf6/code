@@ -51,7 +51,6 @@ const getNodePath = (nodes, label, currentPath = []) => {
 const showNewForm = (file, isNew = true) => {
   filename.value = isNew ? '' : file.label
   $q.dialog({
-    dark: true,
     title: 'Name of the file',
     message: '',
     prompt: {
@@ -61,11 +60,11 @@ const showNewForm = (file, isNew = true) => {
     cancel: true,
     persistent: true
   }).onOk(data => {
+    if (!isNew) return fileStore.rename(file.key, data)
     const path = getNodePath(fileStore.tree, file.label)
     if (!isFolder()) path.pop()
     const fullPath = `${path.join('/')}/${data}`
-    if (isNew) return fileStore.create(fullPath)
-    fileStore.rename(file.key, data)
+    fileStore.create(fullPath)
   })
 }
 
