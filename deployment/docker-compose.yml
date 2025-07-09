@@ -1,0 +1,30 @@
+services:
+  code-web:
+    build: ../web/
+    container_name: code_web
+    env_file:
+     - ../web/.env.local
+    ports:
+      - "5514:80"
+
+  code-api:
+    build: ../api/
+    container_name: code_api
+    restart: always
+    ports:
+      - "9521:3000"
+    environment:
+      - RAILS_ENV=production
+    networks:
+      code_network:
+        ipv4_address: 172.16.183.2
+
+
+networks:
+  code_network:
+    driver: bridge
+    name: code_network
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.183.0/24"
