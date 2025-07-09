@@ -3,6 +3,8 @@
 
 import { defineConfig } from '#q-app/wrappers'
 
+console.log(process.env)
+
 export default defineConfig((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli-webpack/prefetch-feature
@@ -58,6 +60,10 @@ export default defineConfig((ctx) => {
       // analyze: true,
 
       // Options below are automatically set depending on the env, set them if you want to override
+      env: {
+        API_URL: process.env.API_URL || 'http://localhost:8080',
+        WS_API_URL: process.env.WS_API_URL || 'http://localhost:8080'
+      },
       // extractCSS: false,
 
       // https://v2.quasar.dev/quasar-cli-webpack/handling-webpack
